@@ -16,7 +16,7 @@ def train():
 
     total_score = 0
     best_score = 0
-    episodes = 100  # Number of training episodes
+    episodes = 5000  # Number of training episodes
 
     # Track training time
     start_time = time.time()

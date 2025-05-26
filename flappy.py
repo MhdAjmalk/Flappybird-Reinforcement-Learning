@@ -64,18 +64,18 @@ class Flappy:
         for pipe in self.pipes.upper:
             if self.player.crossed(pipe):
                 self.score.add()
-                reward = 1.0  # reward for passing pipe
+                reward += 1.0  # add instead of overwrite
 
         return self.get_state(), reward, done
 
     def get_state(self):
-        """Returns a simplified game state"""
-        bird_y = self.player.y
-        bird_vel = self.player.vel_y
-
+        """Returns a normalized game state for RL"""
+        screen_width, screen_height = 288, 512
+        bird_y = self.player.y / screen_height
+        bird_vel = self.player.vel_y / 10.0  # assuming typical max abs velocity ≈ 10
         pipe = self.get_next_pipe()
-        pipe_dist_x = pipe["x"] - self.player.x
-        pipe_gap_y = (pipe["top_y"] + pipe["bottom_y"]) / 2
+        pipe_dist_x = (pipe["x"] - self.player.x) / screen_width
+        pipe_gap_y = ((pipe["top_y"] + pipe["bottom_y"]) / 2) / screen_height
 
         return np.array([bird_y, bird_vel, pipe_dist_x, pipe_gap_y], dtype=np.float32)
 

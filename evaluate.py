@@ -38,7 +38,7 @@ def evaluate_single_episode(model_path, render=True, delay=0.05):
     
     while not done:
         # Get action from the agent using the current state
-        action = agent.get_action(state)
+        action = agent.get_action(state, exploit_only=True)
 
         # Take a step in the environment with the selected action
         next_state, reward, done = env.step(action)

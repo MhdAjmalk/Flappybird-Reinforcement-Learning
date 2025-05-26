@@ -67,18 +67,15 @@ class Agent:
         self.model = LinearQNet(4, 256, 2)  # input: state_dim=4, output: actions=2
         self.trainer = QTrainer(self.model, lr=0.001, gamma=self.gamma)
     
-    def get_action(self, state):
-        # Faster epsilon decay for better exploration/exploitation balance
-        self.epsilon = max(1, 80 - self.n_games)
-
-        if random.randint(0, 100) < self.epsilon:
-            action = random.randint(0, 1)
-        else:
-            state = torch.tensor(np.array(state), dtype=torch.float)
-            prediction = self.model(state)
-            action = torch.argmax(prediction).item()
-
-        return action
+    def get_action(self, state, exploit_only=False):
+    # Use exploit_only=True for evaluation (no randomness)
+        if not exploit_only:
+           self.epsilon = max(0.01, 0.995 ** self.n_games * 80)
+           if random.random() < self.epsilon / 100.0:
+              return random.randint(0, 1)
+        state = torch.tensor(np.array(state), dtype=torch.float)
+        prediction = self.model(state)
+        return torch.argmax(prediction).item()
     
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
